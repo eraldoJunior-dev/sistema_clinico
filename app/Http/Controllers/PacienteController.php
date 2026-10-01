@@ -59,7 +59,10 @@ class PacienteController extends Controller
      */
     public function show(Paciente $paciente)
     {
-        return view('pacientes.show', compact('paciente'));
+
+        $consultas = $paciente->consultas;
+
+        return view('pacientes.show', compact('paciente', 'consultas'));
     }
 
     /**

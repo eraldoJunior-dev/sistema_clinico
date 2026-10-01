@@ -24,6 +24,32 @@
         {{ $paciente->email }}
     </p>
 
+    <h2>Consultas</h2>
+
+@if ($consultas->count() > 0)
+
+    @foreach ($consultas as $consulta)
+
+        <div>
+            <p><strong>Médico:</strong> {{ $consulta->medico }}</p>
+
+            <p><strong>Data:</strong> {{ $consulta->data }}</p>
+
+            <p><strong>Horário:</strong> {{ $consulta->horario }}</p>
+
+            <p><strong>Motivo:</strong> {{ $consulta->motivo }}</p>
+        </div>
+
+        <hr>
+
+    @endforeach
+
+@else
+
+    <p>Este paciente ainda não possui consultas.</p>
+
+@endif
+
     <br>
 
     <a href="/pacientes">Voltar para pacientes</a>
