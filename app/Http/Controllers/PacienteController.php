@@ -57,14 +57,14 @@ class PacienteController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Paciente $paciente)
-    {
+public function show(string $id)
+{
+    $paciente = Paciente::findOrFail($id);
 
-        $consultas = $paciente->consultas;
+    $consultas = $paciente->consultas;
 
-        return view('pacientes.show', compact('paciente', 'consultas'));
-    }
-
+    return view('pacientes.show', compact('paciente', 'consultas'));
+}
     /**
      * Show the form for editing the specified resource.
      */

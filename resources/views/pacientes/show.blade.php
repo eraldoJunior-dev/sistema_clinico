@@ -26,6 +26,13 @@
 
     <h2>Consultas</h2>
 
+    <a href="{{ route('consultas.create', ['paciente_id' =>
+      $paciente->id]) }}">
+      Agendar consulta
+    </a>
+
+  
+
 @if ($consultas->count() > 0)
 
     @foreach ($consultas as $consulta)

@@ -15,12 +15,14 @@ class ConsultaController extends Controller
         return view('consultas.index', compact('consultas'));
     }
 
-    public function create()
-    {
-        $pacientes = Paciente::all();
+public function create(Request $request)
+{
+    $pacientes = Paciente::all();
 
-        return view('consultas.create', compact('pacientes'));
-    }
+    $pacienteSelecionado = $request->paciente_id;
+
+    return view('consultas.create', compact('pacientes', 'pacienteSelecionado'));
+}
 
     public function store(Request $request)
     {

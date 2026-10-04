@@ -30,9 +30,10 @@
 
             @foreach ($pacientes as $paciente)
 
-                <option value="{{ $paciente->id }}">
-                    {{ $paciente->nome }}
-                </option>
+               <option value="{{ $paciente->id }}"
+               {{ $pacienteSelecionado == $paciente->id ? 'selected' : '' }}>
+                {{ $paciente->nome }}
+               </option>
 
             @endforeach
 
