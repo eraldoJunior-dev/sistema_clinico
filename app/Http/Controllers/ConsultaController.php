@@ -49,7 +49,9 @@ public function create(Request $request)
 
     public function show(string $id)
     {
-        //
+        $consulta = Consulta::with('paciente', 'prontuario')->findOrFail($id);
+
+        return view('consultas.show', compact('consulta'));
     }
 
     public function edit(string $id)
