@@ -1,64 +1,47 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Ficha do Paciente</title>
 </head>
 <body>
     <h1>Ficha do Paciente</h1>
-    <h2>{{ $paciente->nome}}</h2>
-    <p>Data de Nascimento:
-        {{ $paciente->data_nascimento }}
-    </p>
 
-    <p>CPF:
-        {{ $paciente->cpf }}
-    </p>
+    @include('partials.alerts')
 
-    <p>Telefone:
-        {{ $paciente->telefone }}
-    </p>
+    <h2>{{ $paciente->nome }}</h2>
+    <p><strong>Data de nascimento:</strong> {{ $paciente->data_nascimento->format('d/m/Y') }}</p>
+    <p><strong>CPF:</strong> {{ $paciente->cpf }}</p>
+    <p><strong>Telefone:</strong> {{ $paciente->telefone ?? '-' }}</p>
+    <p><strong>E-mail:</strong> {{ $paciente->email ?? '-' }}</p>
 
-    <p>E-mail:
-        {{ $paciente->email }}
-    </p>
+    <p><a href="{{ route('pacientes.edit', $paciente) }}">Editar dados</a></p>
 
     <h2>Consultas</h2>
 
-    <a href="{{ route('consultas.create', ['paciente_id' =>
-      $paciente->id]) }}">
-      Agendar consulta
-    </a>
+    <a href="{{ route('consultas.create', ['paciente_id' => $paciente->id]) }}">Agendar consulta</a>
 
-  
+    <hr>
 
-@if ($consultas->count() > 0)
-
-    @foreach ($consultas as $consulta)
-
+    @forelse ($consultas as $consulta)
         <div>
+            <p><strong>Data:</strong> {{ $consulta->data->format('d/m/Y') }} às {{ substr($consulta->horario, 0, 5) }}</p>
             <p><strong>Médico:</strong> {{ $consulta->medico }}</p>
-
-            <p><strong>Data:</strong> {{ $consulta->data }}</p>
-
-            <p><strong>Horário:</strong> {{ $consulta->horario }}</p>
-
             <p><strong>Motivo:</strong> {{ $consulta->motivo }}</p>
+            <p>
+                <a href="{{ route('consultas.show', $consulta) }}">Ver consulta</a>
+                @if ($consulta->prontuario)
+                    | <em>Prontuário registrado</em>
+                @endif
+            </p>
         </div>
-
         <hr>
-
-    @endforeach
-
-@else
-
-    <p>Este paciente ainda não possui consultas.</p>
-
-@endif
+    @empty
+        <p>Este paciente ainda não possui consultas.</p>
+    @endforelse
 
     <br>
-
-    <a href="/pacientes">Voltar para pacientes</a>
+    <a href="{{ route('pacientes.index') }}">Voltar para pacientes</a>
 </body>
 </html>

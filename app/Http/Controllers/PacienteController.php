@@ -2,109 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Paciente;
-
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PacienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $pacientes = Paciente::all();
+        $pacientes = Paciente::orderBy('nome')->get();
 
         return view('pacientes.index', compact('pacientes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-            return view('pacientes.create');
+        return view('pacientes.create', ['paciente' => new Paciente()]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nome' => 'required',
-            'data_nascimento' => 'required|date',
-            'cpf' => 'required|unique:pacientes,cpf',
-            'telefone' => 'nullable',
-            'email' => 'nullable|email',
-        ]);
+        $paciente = Paciente::create($this->validated($request));
 
-
-
-        $paciente = new Paciente();
-
-        $paciente->nome = $request->nome;
-        $paciente->data_nascimento = $request->data_nascimento;
-        $paciente->cpf = $request->cpf;
-        $paciente->telefone = $request->telefone;
-        $paciente->email = $request->email;
-
-        $paciente->save();
-
-        return redirect()->route('pacientes.index');
+        return redirect()->route('pacientes.show', $paciente)
+            ->with('success', 'Paciente cadastrado com sucesso.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-public function show(string $id)
-{
-    $paciente = Paciente::findOrFail($id);
+    public function show(Paciente $paciente)
+    {
+        $consultas = $paciente->consultas()
+            ->with('prontuario')
+            ->orderByDesc('data')
+            ->orderByDesc('horario')
+            ->get();
 
-    $consultas = $paciente->consultas;
+        return view('pacientes.show', compact('paciente', 'consultas'));
+    }
 
-    return view('pacientes.show', compact('paciente', 'consultas'));
-}
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Paciente $paciente)
     {
         return view('pacientes.edit', compact('paciente'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Paciente $paciente)
     {
-        $request->validate([
-            'nome' => 'required',
-            'data_nascimento' => 'required|date',
-            'cpf' => 'required|unique:pacientes,cpf,' . $paciente->id,
-            'telefone' => 'nullable',
-            'email' => 'nullable|email',
-        ]);
+        $paciente->update($this->validated($request, $paciente));
 
-        $paciente->nome = $request->nome;
-        $paciente->data_nascimento = $request->data_nascimento;
-        $paciente->cpf = $request->cpf;
-        $paciente->telefone = $request->telefone;
-        $paciente->email = $request->email;
-
-        $paciente->save();
-
-        return redirect()->route('pacientes.index');
-
+        return redirect()->route('pacientes.show', $paciente)
+            ->with('success', 'Dados do paciente atualizados.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Paciente $paciente)
     {
         $paciente->delete();
 
-        return redirect()->route('pacientes.index');
+        return redirect()->route('pacientes.index')
+            ->with('success', 'Paciente excluído.');
+    }
+
+    private function validated(Request $request, ?Paciente $paciente = null): array
+    {
+        return $request->validate([
+            'nome' => 'required|string|max:255',
+            'data_nascimento' => 'required|date|before:today',
+            'cpf' => ['required', 'string', 'max:14', Rule::unique('pacientes', 'cpf')->ignore($paciente?->id)],
+            'telefone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+        ]);
     }
 }

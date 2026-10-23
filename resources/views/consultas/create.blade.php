@@ -1,73 +1,22 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nova Consulta</title>
 </head>
 <body>
-
     <h1>Nova Consulta</h1>
 
-    @if ($errors->any())
-        <div>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    @include('partials.alerts')
 
-    <form action="{{ route('consultas.store') }}" method="POST">
-
-        @csrf
-
-        <label>Paciente:</label>
-
-        <select name="paciente_id">
-
-            <option value="">Selecione o paciente</option>
-
-            @foreach ($pacientes as $paciente)
-
-               <option value="{{ $paciente->id }}"
-               {{ $pacienteSelecionado == $paciente->id ? 'selected' : '' }}>
-                {{ $paciente->nome }}
-               </option>
-
-            @endforeach
-
-        </select>
-
-        <br><br>
-
-        <label>Médico:</label>
-        <input type="text" name="medico">
-
-        <br><br>
-
-        <label>Data:</label>
-        <input type="date" name="data">
-
-        <br><br>
-
-        <label>Horário:</label>
-        <input type="time" name="horario">
-
-        <br><br>
-
-        <label>Motivo da consulta:</label>
-        <input type="text" name="motivo">
-
-        <br><br>
-
-        <button type="submit">Agendar consulta</button>
-
-    </form>
+    @include('consultas._form', [
+        'action' => route('consultas.store'),
+        'method' => 'POST',
+        'submit' => 'Agendar consulta',
+    ])
 
     <br>
-
-    <a href="/pacientes">Voltar</a>
-
+    <a href="{{ route('consultas.index') }}">Voltar</a>
 </body>
 </html>
